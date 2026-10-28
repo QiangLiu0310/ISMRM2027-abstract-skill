@@ -1,0 +1,454 @@
+<title>Shared Abstract</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single manuscript column with a sticky limits bar; history slides in as a side panel on wide screens, below on phones. */
+:root {
+  --paper: #fbfbf8;
+  --ink: #1d2126;
+  --muted: #5d6670;
+  --rule: #dcdfe2;
+  --accent: #1f5f8b;
+  --accent-soft: #e4eef5;
+  --ok: #2c7a4b;
+  --warn: #a5630a;
+  --over: #b3261e;
+  --ins-bg: #dff1e3;
+  --del-bg: #f8dfdc;
+  --edit-bg: #fffbe8;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15181b; --ink: #e4e7ea; --muted: #9aa3ad; --rule: #2d3338;
+    --accent: #7db4dc; --accent-soft: #1e2c37; --ok: #6cc28f; --warn: #e2a64b; --over: #f08a80;
+    --ins-bg: #1f3a28; --del-bg: #45221f; --edit-bg: #2a2716; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #15181b; --ink: #e4e7ea; --muted: #9aa3ad; --rule: #2d3338;
+  --accent: #7db4dc; --accent-soft: #1e2c37; --ok: #6cc28f; --warn: #e2a64b; --over: #f08a80;
+  --ins-bg: #1f3a28; --del-bg: #45221f; --edit-bg: #2a2716; color-scheme: dark;
+}
+body { background: var(--paper); color: var(--ink); font-family: var(--sans); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 10px;
+}
+.bar-inner { max-width: 1320px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.bar h1 { font-size: 14px; font-weight: 600; margin: 0; letter-spacing: .02em; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 auto; }
+.chip { font-family: var(--mono); font-size: 12px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--rule); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chip b { font-weight: 500; }
+.chip.ok { color: var(--ok); } .chip.warn { color: var(--warn); border-color: var(--warn); } .chip.over { color: var(--over); border-color: var(--over); font-weight: 600; }
+.actions { display: flex; gap: 8px; align-items: center; }
+button { font: 500 13px var(--sans); border-radius: 6px; padding: 6px 12px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, [contenteditable]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.status { font-size: 12px; color: var(--muted); }
+.notice { max-width: 1320px; margin: 10px auto 0; font-size: 13px; padding: 8px 12px; border-radius: 6px; background: var(--accent-soft); }
+.wrap {
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 64px;
+}
+.layout { max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+.layout.with-history { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); }
+@media (max-width: 900px) { .layout.with-history { grid-template-columns: minmax(0, 1fr); } }
+.doc { max-width: none; font-family: var(--serif); font-size: 16px; line-height: 1.55; min-width: 0; }
+.doc h2 { font-family: var(--sans); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 32px 0 8px; display: flex; justify-content: space-between; gap: 12px; }
+.doc h2 .count { font-family: var(--mono); font-weight: 400; letter-spacing: 0; text-transform: none; }
+.title { font-size: 22px; line-height: 1.3; font-weight: 600; margin: 0 0 10px; }
+.authors { font-family: var(--sans); font-size: 14px; margin: 0 0 4px; }
+.affil { font-family: var(--sans); font-size: 12px; color: var(--muted); font-style: italic; margin: 0; }
+.block { margin: 0 0 12px; }
+.label { font-weight: 600; }
+.ed { border-radius: 4px; padding: 1px 3px; margin: 0 -3px; transition: background .15s; white-space: pre-wrap; }
+.editable .ed:hover { background: var(--edit-bg); }
+.ed.dirty { background: var(--edit-bg); box-shadow: inset 2px 0 0 var(--warn); }
+figure { margin: 20px 0 24px; max-width: 1000px; }
+figure img { width: 100%; height: auto; border-radius: 4px; display: block; background: #fff; }
+figcaption { font-family: var(--sans); font-size: 13.5px; line-height: 1.5; margin-top: 8px; }
+figcaption .cc { font-family: var(--mono); font-size: 11.5px; margin-left: 6px; }
+.refs { font-family: var(--sans); font-size: 13px; line-height: 1.5; padding-left: 1.6em; margin: 0; }
+.refs li { margin-bottom: 4px; }
+.history { min-width: 0; font-size: 13px; }
+.history h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 32px 0 10px; }
+.entry { border-top: 1px solid var(--rule); padding: 10px 0; }
+.entry .who { font-weight: 600; }
+.entry .when { color: var(--muted); font-size: 12px; }
+.change { margin-top: 8px; }
+.change .where { font-size: 12px; color: var(--accent); font-weight: 500; }
+.diff { font-family: var(--serif); font-size: 14px; line-height: 1.5; margin-top: 2px; overflow-wrap: anywhere; }
+.diff ins { background: var(--ins-bg); text-decoration: none; }
+.diff del { background: var(--del-bg); }
+.empty { color: var(--muted); }
+.hint { font-family: var(--sans); font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+.hint code, .ed.editing { font-family: var(--mono); }
+.ed.editing { font-size: .9em; background: var(--edit-bg); }
+.mj-d { display: block; text-align: center; margin: 6px 0; overflow-x: auto; overflow-y: hidden; }
+.mj svg { max-width: 100%; }
+@media (prefers-reduced-motion: reduce) { .ed { transition: none; } }
+</style>
+
+<div class="bar">
+  <div class="bar-inner">
+    <h1 id="hdr">Shared abstract</h1>
+    <div class="chips" id="chips"></div>
+    <div class="actions">
+      <span class="status" id="status">Loading…</span>
+      <button id="histBtn" type="button">History</button>
+      <button id="saveBtn" class="primary" type="button" disabled>Save changes</button>
+    </div>
+  </div>
+  <div class="notice" id="notice" hidden></div>
+</div>
+
+<div class="wrap">
+  <div class="layout" id="layout">
+    <article class="doc" id="doc"><p class="empty">Loading the abstract…</p></article>
+    <aside class="history" id="history" hidden></aside>
+  </div>
+</div>
+
+<script>window.MathJax = { startup: { typeset: false }, svg: { fontCache: "local" } };</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg-full.js" async></script>
+<script>
+(() => {
+  // Word/character limits come from data.limits (any of body, synopsis, impact, caption); a missing key means no limit.
+  let LIMITS = {};
+  const DRAFT_KEY = "shared-abstract-draft-v1";
+  let data = null;          // last saved state
+  let canSave = false;
+  let artifactNs = null, userNs = null;
+  let myId = null;
+
+  const $ = (id) => document.getElementById(id);
+  const words = (s) => (stripMath(s).trim().match(/\S+/g) || []).length;
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // Math: $...$ inline, $$...$$ display, \$ for a literal dollar sign. Each field's source text lives in `src`;
+  // fields that contain math show rendered SVG and switch to their source while being edited.
+  const src = {};
+  let mathReady = false;
+  const MATH_RE = /(^|[^\\])\$/;
+  const hasMath = (s) => MATH_RE.test(s);
+  function splitMath(s) {
+    const parts = []; let buf = "", i = 0;
+    while (i < s.length) {
+      if (s[i] === "\\" && s[i + 1] === "$") { buf += "$"; i += 2; continue; }
+      if (s[i] === "$") {
+        const disp = s[i + 1] === "$", open = disp ? 2 : 1;
+        let j = i + open, end = -1;
+        while (j < s.length) {
+          if (s[j] === "\\") { j += 2; continue; }
+          if (s[j] === "$" && (!disp || s[j + 1] === "$")) { end = j; break; }
+          j++;
+        }
+        if (end < 0) { buf += s.slice(i); break; }
+        if (buf) parts.push({ text: buf }); buf = "";
+        parts.push({ tex: s.slice(i + open, end), disp });
+        i = end + open; continue;
+      }
+      buf += s[i++];
+    }
+    if (buf) parts.push({ text: buf });
+    return parts;
+  }
+  function stripMath(s) { return splitMath(s).map((p) => (p.text !== undefined ? p.text : (p.disp ? " x " : "x"))).join(""); }
+  function renderMath(s) {
+    if (!hasMath(s)) return esc(s.replace(/\\\$/g, "$"));
+    return splitMath(s).map((p) => {
+      if (p.text !== undefined) return esc(p.text);
+      const raw = esc((p.disp ? "$$" : "$") + p.tex + (p.disp ? "$$" : "$"));
+      if (!mathReady) return raw;
+      try {
+        const node = window.MathJax.tex2svg(p.tex, { display: p.disp });
+        return `<span class="mj${p.disp ? " mj-d" : ""}" contenteditable="false">${node.outerHTML}</span>`;
+      } catch { return raw; }
+    }).join("");
+  }
+  function caretEnd(el) {
+    try { const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } catch {}
+  }
+  async function loadMath() {
+    for (let t = 0; t < 150 && !(window.MathJax && window.MathJax.startup && window.MathJax.startup.promise); t++) await new Promise((r) => setTimeout(r, 100));
+    try { await window.MathJax.startup.promise; } catch { return; }
+    if (!window.MathJax.tex2svg) return;
+    mathReady = true;
+    document.querySelectorAll(".ed").forEach((el) => { if (document.activeElement !== el && hasMath(src[el.dataset.key])) el.innerHTML = renderMath(src[el.dataset.key]); });
+  }
+
+  // Every editable text lives at a path in `data`; fields are addressed by key like "body.m-stage1".
+  function fields(d) {
+    const f = [];
+    f.push({ key: "title", name: "Title", get: () => d.title, set: (v) => (d.title = v) });
+    f.push({ key: "authors", name: "Authors", get: () => d.authors, set: (v) => (d.authors = v) });
+    f.push({ key: "affiliations", name: "Affiliations", get: () => d.affiliations, set: (v) => (d.affiliations = v) });
+    if (d.impact !== undefined) f.push({ key: "impact", name: "Impact", group: "impact", get: () => d.impact, set: (v) => (d.impact = v) });
+    (d.synopsis || []).forEach((s) => f.push({ key: "synopsis." + s.id, name: "Synopsis · " + s.label.replace(":", ""), group: "synopsis", get: () => s.text, set: (v) => (s.text = v) }));
+    // A body block with `nocount: true` (e.g. Acknowledgements) is editable but not counted toward the body limit.
+    d.body.forEach((b) => {
+      if (b.label) f.push({ key: "label." + b.id, name: b.section + " · heading", get: () => b.label, set: (v) => (b.label = v) });
+      f.push({ key: "body." + b.id, name: b.section + (b.label ? " · " + b.label.replace(/\.$/, "") : ""), group: b.nocount ? undefined : "body", get: () => b.text, set: (v) => (b.text = v) });
+    });
+    d.figures.forEach((c, i) => f.push({ key: "figures." + c.id, name: "Figure " + (i + 1) + " caption", group: "caption", get: () => c.text, set: (v) => (c.text = v) }));
+    d.references.forEach((r, i) => f.push({ key: "references." + r.id, name: "Reference " + (i + 1), get: () => r.text, set: (v) => (r.text = v) }));
+    return f;
+  }
+
+  function ed(key, text, tag = "span") {
+    src[key] = text;
+    return `<${tag} class="ed" data-key="${key}" spellcheck="true">${renderMath(text)}</${tag}>`;
+  }
+
+  function render() {
+    const d = data;
+    let h = "";
+    if (canSave) h += `<p class="hint">Click any text to edit it. Math: <code>$x^2$</code> inline, <code>$$\\int_0^\\infty$$</code> on its own line, <code>\\$</code> for a dollar sign.</p>`;
+    h += `<h2 style="margin-top:0">Title &amp; authors</h2>`;
+    h += ed("title", d.title, "p").replace('class="ed"', 'class="ed title"');
+    h += ed("authors", d.authors, "p").replace('class="ed"', 'class="ed authors"');
+    h += ed("affiliations", d.affiliations, "p").replace('class="ed"', 'class="ed affil"');
+    if (d.impact !== undefined) h += `<h2>Impact <span class="count" id="c-impact"></span></h2><p class="block">${ed("impact", d.impact)}</p>`;
+    if ((d.synopsis || []).length) h += `<h2>Synopsis <span class="count" id="c-synopsis"></span></h2>`;
+    (d.synopsis || []).forEach((s) => (h += `<p class="block"><span class="label">${esc(s.label)}</span> ${ed("synopsis." + s.id, s.text)}</p>`));
+    let section = null;
+    d.body.forEach((b, i) => {
+      if (b.section !== section) {
+        section = b.section;
+        h += `<h2>${esc(section)}${i === 0 ? ' <span class="count" id="c-body"></span>' : ""}</h2>`;
+      }
+      h += `<p class="block">${b.label ? `<span class="label">${ed("label." + b.id, b.label)}</span> ` : ""}${ed("body." + b.id, b.text)}</p>`;
+    });
+    h += `<h2>Figures</h2>`;
+    d.figures.forEach((c, i) => {
+      h += `<figure><img src="${esc(c.file)}" alt="Figure ${i + 1}" loading="lazy"><figcaption><b>Figure ${i + 1}.</b> ${ed("figures." + c.id, c.text)}<span class="cc" id="cc-${c.id}"></span></figcaption></figure>`;
+    });
+    h += `<h2>References</h2><ol class="refs">`;
+    d.references.forEach((r) => (h += `<li>${ed("references." + r.id, r.text)}</li>`));
+    h += `</ol>`;
+    $("doc").innerHTML = h;
+    $("doc").classList.toggle("editable", canSave);
+    document.querySelectorAll(".ed").forEach((el) => {
+      if (canSave) {
+        try { el.contentEditable = "plaintext-only"; } catch { el.contentEditable = "true"; }
+        if (el.contentEditable !== "plaintext-only") el.contentEditable = "true";
+      }
+      const k = el.dataset.key;
+      el.addEventListener("focus", () => {
+        if (!canSave || !hasMath(src[k])) return;
+        el.textContent = src[k]; el.classList.add("editing"); caretEnd(el);
+      });
+      el.addEventListener("blur", () => {
+        el.classList.remove("editing");
+        if (hasMath(src[k])) el.innerHTML = renderMath(src[k]);
+      });
+      el.addEventListener("input", onInput);
+      el.addEventListener("paste", (e) => {
+        e.preventDefault();
+        const t = (e.clipboardData || window.clipboardData).getData("text/plain").replace(/\s*\n\s*/g, " ");
+        document.execCommand("insertText", false, t);
+      });
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter") e.preventDefault(); });
+    });
+    updateCounts();
+  }
+
+  function current() {
+    const out = {};
+    Object.keys(src).forEach((k) => (out[k] = src[k].replace(/\s+/g, " ").trim()));
+    return out;
+  }
+
+  function dirtyKeys() {
+    const cur = current();
+    return fields(data).filter((f) => cur[f.key] !== undefined && cur[f.key] !== f.get()).map((f) => f.key);
+  }
+
+  function onInput(e) {
+    if (e && e.currentTarget && e.currentTarget.dataset) src[e.currentTarget.dataset.key] = e.currentTarget.textContent;
+    const dk = new Set(dirtyKeys());
+    document.querySelectorAll(".ed").forEach((el) => el.classList.toggle("dirty", dk.has(el.dataset.key)));
+    $("saveBtn").disabled = !canSave || dk.size === 0;
+    $("status").textContent = dk.size ? `${dk.size} unsaved change${dk.size > 1 ? "s" : ""}` : savedStatus();
+    try {
+      if (dk.size) { const cur = current(); const draft = {}; dk.forEach((k) => (draft[k] = cur[k])); sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); }
+      else sessionStorage.removeItem(DRAFT_KEY);
+    } catch {}
+    updateCounts();
+  }
+
+  function chip(label, n, max, unit) {
+    const cls = n > max ? "over" : n > max * 0.97 ? "warn" : "ok";
+    return `<span class="chip ${cls}">${label} <b>${n}</b>/${max}${unit}</span>`;
+  }
+
+  function updateCounts() {
+    const cur = current(), f = fields(data);
+    const sum = (g) => f.filter((x) => x.group === g).reduce((a, x) => a + words(cur[x.key] ?? x.get()), 0);
+    const body = sum("body"), syn = sum("synopsis"), imp = sum("impact");
+    // Captions count printed characters: math counts its TeX without $ delimiters or _ ^ { } (so $k_y$ is 2).
+    const capLen = (s) => splitMath(s).map((p) => (p.text !== undefined ? p.text : p.tex.replace(/[_^{}]/g, ""))).join("").length;
+    const caps = data.figures.map((c) => ("Figure 0. ".length + capLen(cur["figures." + c.id] ?? c.text)));
+    $("chips").innerHTML = (LIMITS.body ? chip("Body", body, LIMITS.body, " words") : "") +
+      (LIMITS.synopsis && data.synopsis ? chip("Synopsis", syn, LIMITS.synopsis, "") : "") +
+      (LIMITS.impact && data.impact !== undefined ? chip("Impact", imp, LIMITS.impact, "") : "") +
+      (LIMITS.caption && caps.length ? chip("Longest caption", Math.max(...caps), LIMITS.caption, " chars") : "");
+    const set = (id, n, max, unit) => { const el = $(id); if (el) { el.textContent = max ? `${n}/${max} ${unit}` : `${n} ${unit}`; el.style.color = max && n > max ? "var(--over)" : ""; } };
+    set("c-body", body, LIMITS.body, "words"); set("c-synopsis", syn, LIMITS.synopsis, "words"); set("c-impact", imp, LIMITS.impact, "words");
+    data.figures.forEach((c, i) => set("cc-" + c.id, caps[i], LIMITS.caption, "chars"));
+  }
+
+  // Word-level diff (LCS) for the history panel.
+  function diff(a, b) {
+    const A = a.split(/(\s+)/), B = b.split(/(\s+)/);
+    const n = A.length, m = B.length;
+    if (n * m > 400000) return `<del>${esc(a)}</del> <ins>${esc(b)}</ins>`;
+    const L = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    let i = 0, j = 0, out = "", ctx = [];
+    const flushCtx = (tail) => {
+      const s = ctx.join(""); ctx = [];
+      if (s.length <= 80) return esc(s);
+      return tail === "start" ? "…" + esc(s.slice(-60)) : tail === "end" ? esc(s.slice(0, 60)) + "…" : esc(s.slice(0, 40)) + " … " + esc(s.slice(-40));
+    };
+    let first = true;
+    while (i < n || j < m) {
+      if (i < n && j < m && A[i] === B[j]) { ctx.push(A[i]); i++; j++; continue; }
+      if (ctx.length) { out += flushCtx(first ? "start" : "mid"); }
+      first = false;
+      let del = "", ins = "";
+      while (i < n && (j >= m || L[i + 1][j] >= L[i][j + 1]) && !(j < m && A[i] === B[j])) del += A[i++];
+      while (j < m && (i >= n || L[i][j + 1] > L[i + 1][j]) && !(i < n && A[i] === B[j])) ins += B[j++];
+      if (del) out += `<del>${esc(del)}</del>`;
+      if (ins) out += `<ins>${esc(ins)}</ins>`;
+    }
+    if (ctx.length) out += flushCtx("end");
+    return out;
+  }
+
+  async function renderHistory() {
+    const el = $("history");
+    const hist = (data.history || []).slice().reverse();
+    let names = {};
+    if (userNs) {
+      const ids = [...new Set(hist.map((e) => e.by).filter(Boolean))];
+      try { names = ids.length ? await userNs.profiles(ids) : {}; } catch {}
+    }
+    let h = `<h3>Change history</h3>`;
+    if (!hist.length) h += `<p class="empty">No edits saved on this page yet. Edits saved here appear in this list, newest first, with exactly what changed.</p>`;
+    const whos = [];
+    hist.forEach((e) => {
+      const who = (e.by && names[e.by] && names[e.by].name) || e.byLabel || (e.by && e.by === myId ? "You" : "Someone");
+      whos.push(who);
+      const when = new Date(e.at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+      h += `<div class="entry"><span class="who"></span> <span class="when">· ${esc(when)}</span>`;
+      e.changes.forEach((c) => (h += `<div class="change"><div class="where">${esc(c.name)}</div><div class="diff">${diff(c.before, c.after)}</div></div>`));
+      h += `</div>`;
+    });
+    el.innerHTML = h;
+    el.querySelectorAll(".entry .who").forEach((n, k) => (n.textContent = whos[k]));
+  }
+
+  function savedStatus() {
+    const last = (data.history || []).slice(-1)[0];
+    return last ? "Last saved " + new Date(last.at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "No edits saved yet";
+  }
+
+  async function save() {
+    const dk = dirtyKeys();
+    if (!dk.length || !artifactNs) return;
+    const cur = current();
+    const next = JSON.parse(JSON.stringify(data));
+    const f = fields(next);
+    const changes = [];
+    f.forEach((x) => { if (dk.includes(x.key)) { changes.push({ key: x.key, name: x.name, before: x.get(), after: cur[x.key] }); x.set(cur[x.key]); } });
+    next.history = (next.history || []).concat([{ at: new Date().toISOString(), by: myId, changes }]).slice(-300);
+    $("saveBtn").disabled = true;
+    $("status").textContent = "Saving…";
+    try {
+      await artifactNs.publish({ "data/abstract.json": { content: JSON.stringify(next, null, 1), contentType: "application/json" } });
+      data = next;
+      try { sessionStorage.removeItem(DRAFT_KEY); } catch {}
+      render(); onInput();
+      if (!$("history").hidden) renderHistory();
+      $("status").textContent = "Saved";
+    } catch (err) {
+      const code = err && err.code;
+      if (code === "conflict") {
+        $("status").textContent = "A co-author saved first; reloading with their version. Your unsaved edits are kept and reapplied.";
+        // The shell normally reloads this view; if it hasn't after a few seconds, say how to recover. The draft is in sessionStorage.
+        setTimeout(() => { $("status").textContent = "A co-author saved first. Reload the page: your unsaved edits will be restored on top of their version."; }, 6000);
+      } else if (code === "not_writer" || code === "not_granted" || code === "capability_disabled" || code === "capability_removed" || code === "not_declared" || code === "consent_required") {
+        canSave = false; showReadOnly();
+        $("status").textContent = "Saving isn't available in this view";
+      } else {
+        $("status").textContent = "Couldn't save just now. Your edits are still here; try Save again.";
+        $("saveBtn").disabled = false;
+      }
+    }
+  }
+
+  function showReadOnly() {
+    $("saveBtn").hidden = true;
+    const n = $("notice"); n.hidden = false;
+    n.textContent = "You can read this abstract and its change history. Ask the owner for edit access to change the text.";
+  }
+
+  function restoreDraft() {
+    let draft = null;
+    try { draft = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "null"); } catch {}
+    if (!draft || !canSave) return;
+    let n = 0;
+    document.querySelectorAll(".ed").forEach((el) => { const k = el.dataset.key; if (draft[k] !== undefined) { src[k] = draft[k]; el.innerHTML = renderMath(draft[k]); n++; } });
+    if (n) { onInput(); const no = $("notice"); no.hidden = false; no.textContent = `Your ${n} unsaved edit${n > 1 ? "s were" : " was"} restored on top of the latest saved version. Review and press Save.`; }
+  }
+
+  $("saveBtn").addEventListener("click", save);
+  $("histBtn").addEventListener("click", () => {
+    const el = $("history"); el.hidden = !el.hidden;
+    $("layout").classList.toggle("with-history", !el.hidden);
+    $("histBtn").textContent = el.hidden ? "History" : "Hide history";
+    if (!el.hidden) renderHistory();
+  });
+  document.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); if (!$("saveBtn").disabled) save(); } });
+
+  async function boot() {
+    try {
+      const r = await fetch("data/abstract.json", { cache: "no-store" });
+      data = await r.json();
+      LIMITS = data.limits || {};
+      const hdr = data.header || data.title || "Shared abstract";
+      $("hdr").textContent = hdr;
+      document.title = hdr;
+    } catch {
+      $("doc").innerHTML = `<p class="empty">The abstract text couldn't be loaded. Reload the page to try again.</p>`;
+      $("status").textContent = "";
+      return;
+    }
+    render();
+    loadMath();
+    $("status").textContent = savedStatus();
+    const claude = window.claude;
+    if (!claude || !claude.use) { showReadOnly(); return; }
+    const [a, u] = await Promise.all([claude.use("artifact"), claude.use("user")]);
+    artifactNs = a; userNs = u;
+    if (u) { try { myId = await u.id(); } catch {} }
+    let writer = false;
+    if (u) { try { writer = (await u.canEdit()) === true || (await u.isOwner()) === true; } catch {} }
+    canSave = !!a && writer;
+    if (!canSave) { showReadOnly(); return; }
+    render();
+    restoreDraft();
+    $("status").textContent = savedStatus();
+  }
+  boot();
+})();
+</script>
